@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chai.ya.shul3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        background: #333;
+        padding: 20px;
+        text-align: center;
+        color: white;
+    }
+    #box{
+        width: 90%;
+        max-width: 420px;
+        margin: auto;
+        padding: 20px;
+        background: #000;
+        color: white;
+        border-radius: 12px;
+        box-shadow: 0 0 12px rgba(0,0,0,0.5);
+    }
+    textarea{
+        width: 100%;
+        height: 130px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #555;
+        background:#111;
+        color:white;
+        resize: none;
+        font-size: 16px;
+    }
+    button{
+        margin-top: 10px;
+        padding: 10px 20px;
+        background: #1e90ff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+    #messages{
+        text-align: left;
+        margin-top: 20px;
+    }
+    .msg{
+        background: #222;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border: 1px solid #444;
+    }
+</style>
+</head>
+<body>
+
+<h2>Chai.ya.shul3</h2>
+
+<div id="box">
+    <div id="send-panel">
+        <textarea id="msgInput" placeholder="Type your message..."></textarea>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <p id="thanks" style="display:none; font-size:18px;">
+        <b>Shul3 has received your Chai 😊</b>
+    </p>
+
+    <div id="admin-panel" style="display:none;">
+        <h3>Received Messages</h3>
+        <div id="messages"></div>
+    </div>
+</div>
+
+<script>
+function sendMessage(){
+    let text = document.getElementById("msgInput").value.trim();
+    if(text === "") return alert("Please type a message");
+
+    // Admin triggers panel
+    if(text === "Stormstrike6799."){
+        document.getElementById("send-panel").style.display = "none";
+        document.getElementById("thanks").style.display = "none";
+        loadMessages();
+        document.getElementById("admin-panel").style.display = "block";
+        return;
+    }
+
+    let messages = JSON.parse(localStorage.getItem("chai_messages") || "[]");
+
+    messages.push({
+        text: text,
+        time: new Date().toLocaleString()
+    });
+
+    localStorage.setItem("chai_messages", JSON.stringify(messages));
+
+    document.getElementById("send-panel").style.display = "none";
+    document.getElementById("thanks").style.display = "block";
+}
+
+function loadMessages(){
+    let messages = JSON.parse(localStorage.getItem("chai_messages") || "[]");
+    let container = document.getElementById("messages");
+    container.innerHTML = "";
+
+    if(messages.length === 0){
+        container.innerHTML = "<p>No messages yet.</p>";
+        return;
+    }
+
+    messages.forEach(m => {
+        let div = document.createElement("div");
+        div.className = "msg";
+        div.innerHTML = `<b>Message:</b> ${escapeHtml(m.text)}<br><small><b>Sent:</b> ${m.time}</small>`;
+        container.appendChild(div);
+    });
+}
+
+function escapeHtml(str){
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+</script>
+
+</body>
+</html>
